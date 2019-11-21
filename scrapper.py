@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 URL = 'https://www.talkenglish.com/vocabulary/top-1500-nouns.aspx'
 
 
-def get_raw_html(url: str = URL) -> str:
+def get_raw_html(url: Optional[str] = URL) -> str:
     resp = requests.get(url)
     if resp.status_code != 200:
         raise RuntimeError(f'Failed to fetch HTML from {url}.')
@@ -25,20 +25,20 @@ def extract_noun_list_from_parser(parser: BeautifulSoup) -> Sequence[str]:
     return set([noun for noun in nouns if noun])
 
 
-def write_noun_list_to_file(nouns: Sequence, 
-                       filepath: Optional[Union[str, Path]] = '') -> None:
+def write_noun_list_to_file(nouns: Sequence[str], 
+                            filepath: Optional[Union[str, Path]] = '') -> None:
     if not filepath:
         filepath = Path(__file__).resolve().parent / 'nouns.txt'
     with open(filepath, 'w') as fp:
         fp.write('\n'.join(nouns))
 
 
-def main():
+def main() -> None:
     html = get_raw_html()
     parser = get_html_parser(html)
     nouns = extract_noun_list_from_parser(parser)
     write_noun_list_to_file(nouns)
-    print(f'{len(nouns)} written to file.')
+    print(f'SUCCESS! {len(nouns)} written to file.')
 
 
 if __name__ == '__main__':
